@@ -1,0 +1,11 @@
+
+Debug (N/A):  0 Thread listening
+Debug (N/A):  1
+Error (MascaradeServer):  Error while receiving :  4
+Debug (N/A):  1
+Error (MascaradeServer):  Error while receiving :  4
+Debug (N/A):  1
+Error (MascaradeServer):  Error while receiving :  4
+Debug (N/A):  1
+Error (MascaradeServer):  Error while receiving :  4
+Debug (N/A):  1
