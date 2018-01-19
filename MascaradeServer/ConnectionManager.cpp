@@ -1,5 +1,5 @@
 #include "ConnectionManager.h"
-
+#include "ConnectionTCP.h"
 
 
 ConnectionManager::ConnectionManager():
@@ -22,6 +22,9 @@ void ConnectionManager::launchListeningThread()
 void ConnectionManager::listeningThreadFunction()
 {
 	Log::debug() << "Thread listening";
+	sf::Socket::Status status = m_listener.listen(m_listeningPort);
+	if(status != sf::Socket::Status::Done)
+		Log::error("MascaradeServer") << "Error while listening " << status;
 	while(1)
 	{
 		listen();
@@ -30,33 +33,35 @@ void ConnectionManager::listeningThreadFunction()
 
 void ConnectionManager::listen()
 {
-	sf::Socket::Status status = m_listener.listen(m_listeningPort);
+	Connection* connection = new ConnectionTCP();
+	sf::Socket::Status status = connection->acceptFrom(m_listener);
 	if (status != sf::Socket::Done)
 	{
 		Log::error("MascaradeServer") << "Error while listening " << status;
 		return;
 	}
-
-	m_connections.push_back(std::make_shared<Connection>());
-	m_connections.back()->acceptFrom(m_listener);
+	m_connectionsAccess.lock();
+	m_connections.push_back(connection);
+	m_connectionsAccess.unlock();
 }
 
 void ConnectionManager::checkReceive()
 {
-	Log::debug() << m_connections.size();
-	for(auto it = m_connections.begin(); it != m_connections.end(); ++it)
+	//Log::debug() << m_connections.size();
+	m_connectionsAccess.lock();
+	for(auto it = m_connections.begin(); it != m_connections.end();)
 	{
-		if (handleMessage((*it)->receive()) < 0)
-			it = m_connections.erase(it);
+		if((*it)->receive().functionName == "disconnected")
+		{
+			m_messageHandler(*it);
+			//Log::debug() << "DELETING CONNECTION";
+			it = m_connections.erase(it);			
+			continue;
+		}
+		else {
+			m_messageHandler(*it);
+		}
+		++it;
 	}
-}
-
-int ConnectionManager::handleMessage(std::string& s)
-{
-	if (s == "pass")
-		return 0;
-	else if (s == "disconnect")
-		return -1;
-	Log::debug("ConnectionManager-handleMessage") << s;
-	return 0;
+	m_connectionsAccess.unlock();
 }

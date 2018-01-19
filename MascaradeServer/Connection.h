@@ -7,6 +7,14 @@
 #include "Singleton.h"
 #include <SFML/Network.hpp>
 
+class Player;
+
+struct Query
+{
+	std::string functionName;
+	std::map<std::string,std::string> parameters;
+};
+
 class Connection 
 {
 
@@ -14,26 +22,23 @@ public:
 	Connection();
 	~Connection();
 
-	void connect(std::string address, int port);
-	void disconnect();
-	void acceptFrom(sf::TcpListener& tl);
-
-	void send(std::string string);
-
-	void launchListening();
-	std::string receive();
+	void				connect(std::string address, int port);
+	void				disconnect();
+	sf::Socket::Status	acceptFrom(sf::TcpListener& tl);
 	
-	int getRemotePort() { return m_socket.getRemotePort(); }
-	int getLocalPort() { return m_socket.getLocalPort(); }
-	std::string getAddress() { return m_socket.getRemoteAddress().toString(); }
+	virtual void		send(sf::Packet&) = 0;
+	virtual Query&		receive() = 0;
+	
+	Query&				getQuery() { return m_query; }
+	Player*				getPlayer() { return m_player; }
 
-private:
+protected:
 
 	void listening();
-	void appendString(std::string& s, char* c, int nb);
+	
+	Query						m_query;
 	sf::TcpSocket				m_socket;
-
-	static const std::string	eom;
+	Player*						m_player;
 };
 
 #endif

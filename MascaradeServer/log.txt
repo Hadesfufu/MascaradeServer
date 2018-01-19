@@ -1,11 +1,55 @@
 
-Debug (N/A):  0 Thread listening
-Debug (N/A):  1
-Error (MascaradeServer):  Error while receiving :  4
-Debug (N/A):  1
-Error (MascaradeServer):  Error while receiving :  4
-Debug (N/A):  1
-Error (MascaradeServer):  Error while receiving :  4
-Debug (N/A):  1
-Error (MascaradeServer):  Error while receiving :  4
-Debug (N/A):  1
+Debug (N/A):  coucou 127.0.0.1 46463
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 16
+Debug (N/A):  0 16 8
+Debug (N/A):  GET / HTTP/1.1
+Host: localhost:53000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:57.0) Gecko/20100101 Firefox/57.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate
+Sec-WebSocket-Version: 13
+Origin: moz-extension://ddc3fdfa-4386-4301-b1de-8a3d9f6bc850
+Sec-WebSocket-Extensions: permessage-deflate
+Sec-WebSocket-Key: pqh5iOuLpadpqDpRHUg8Hg==
+Connection: keep-alive, Upgrade
+Pragma: no-cache
+Cache-Control: no-cache
+Upgrade: websocket
+
+
+Debug (cuted):  pqh5iOuLpadpqDpRHUg8Hg==

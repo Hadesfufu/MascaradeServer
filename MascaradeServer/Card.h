@@ -5,15 +5,16 @@
 #ifndef CARD_H
 #define CARD_H
 #include <string>
+#include "external/pugixml/pugixml.hpp"
 
 class Card
 {
 public:
 	Card();
+	Card(pugi::xml_node& node);
 	~Card();
 
-
-	void load(std::string name);
+	void load(pugi::xml_node& node);
 private:
 
 	std::string				m_name;

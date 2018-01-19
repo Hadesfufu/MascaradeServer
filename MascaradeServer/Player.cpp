@@ -2,8 +2,9 @@
 
 
 
-Player::Player()
+Player::Player(Connection* c)
 {
+	m_connection = c;
 }
 
 

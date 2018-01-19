@@ -1,0 +1,18 @@
+////////////////////////////////////////////////////////////
+// < Fichier : "Query.h"> 
+// < Author : Yohan "HadesFufu" Masson > 
+//////////////////////////////////////////////////////////// 
+#ifndef QUERY_H
+#define QUERY_H
+class Query
+{
+public:
+	Query();
+	~Query();
+
+private:
+
+};
+#endif
+
+

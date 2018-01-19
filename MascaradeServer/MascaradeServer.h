@@ -10,6 +10,9 @@
 #include <list>
 #include "Game.h"
 #include <SFML/Network.hpp>
+#include "ConnectionManager.h"
+#include "NotificationManager.h"
+
 
 class MascaradeServer : public Singleton<MascaradeServer>
 {
@@ -18,13 +21,20 @@ class MascaradeServer : public Singleton<MascaradeServer>
 public:
 
 	void launchServer();
+	void load();
 
+	void updateClient(Connection* c);
+
+	int	 handleMessage(Connection*);
+	void login(NotificationManager::Dictionary dic);
 private:
 
 	MascaradeServer();
 	~MascaradeServer();
 
-	std::list<Game> m_games;
+	std::vector<Card>	m_cards;
+	std::list<Game>		m_games;
+	sf::Packet			m_sendPacket;
 };
 
 #endif

@@ -151,7 +151,9 @@
   <ItemGroup>
     <ClInclude Include="Card.h" />
     <ClInclude Include="Connection.h" />
+    <ClInclude Include="ConnectionHTTP.h" />
     <ClInclude Include="ConnectionManager.h" />
+    <ClInclude Include="ConnectionTCP.h" />
     <ClInclude Include="external\pugixml\pugiconfig.hpp" />
     <ClInclude Include="external\pugixml\pugixml.hpp" />
     <ClInclude Include="Game.h" />
@@ -165,7 +167,9 @@
   <ItemGroup>
     <ClCompile Include="Card.cpp" />
     <ClCompile Include="Connection.cpp" />
+    <ClCompile Include="ConnectionHTTP.cpp" />
     <ClCompile Include="ConnectionManager.cpp" />
+    <ClCompile Include="ConnectionTCP.cpp" />
     <ClCompile Include="external\pugixml\pugixml.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="Log.cpp" />

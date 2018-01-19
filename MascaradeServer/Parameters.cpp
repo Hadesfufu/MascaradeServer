@@ -6,12 +6,12 @@ Parameters::Parameters()
 }
 Parameters::~Parameters()
 {
-	m_doc.save_file("data/param.ini");
+	m_doc.save_file("param.ini");
 	m_datas.clear();
 }
 
 void Parameters::load(void){
-	std::string path("data/param.ini");
+	std::string path("param.ini");
 	if (!m_doc.load_file(path.c_str())){
 		Log::error("Parameters") << "Unable to open the parameters file";
 		return;
@@ -20,7 +20,7 @@ void Parameters::load(void){
 }
 
 void Parameters::save(){
-	m_doc.save_file("data/param.ini");
+	m_doc.save_file("param.ini");
 }
 
 void Parameters::set(std::string paramName, int value){
