@@ -12,12 +12,12 @@ Card::~Card()
 }
 
 
-Card::Card(pugi::xml_node& node)
+Card::Card(json& node)
 {
 	load(node);
 }
 
-void Card::load(pugi::xml_node& node)
+void Card::load(json& node)
 {
 	
 }

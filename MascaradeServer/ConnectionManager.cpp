@@ -1,48 +1,70 @@
 #include "ConnectionManager.h"
 #include "ConnectionTCP.h"
+#include "ConnectionWebSocket.h"
 
 
 ConnectionManager::ConnectionManager():
-m_listeningThread(&ConnectionManager::listeningThreadFunction, this)
+m_TCPlisteningThread(&ConnectionManager::TCPlisteningThreadFunction, this),
+m_WebSocketlisteningThread(&ConnectionManager::WebSocketlisteningThreadFunction, this)
 {
-	m_listener.setBlocking(true);
+	m_TCPlistener.setBlocking(true);
+	m_WebSocketlistener.setBlocking(true);
 }
 
 ConnectionManager::~ConnectionManager()
 {
-	m_listeningThread.terminate();
+	m_TCPlisteningThread.terminate();
+	m_WebSocketlisteningThread.terminate();
 	Log::debug() << "Thread terminated";
 }
 
-void ConnectionManager::launchListeningThread()
+void ConnectionManager::launchListeningThreads()
 {
-	m_listeningThread.launch();
+	m_TCPlisteningThread.launch();
+	m_WebSocketlisteningThread.launch();
 }
 
-void ConnectionManager::listeningThreadFunction()
+void ConnectionManager::TCPlisteningThreadFunction()
 {
-	Log::debug() << "Thread listening";
-	sf::Socket::Status status = m_listener.listen(m_listeningPort);
-	if(status != sf::Socket::Status::Done)
-		Log::error("MascaradeServer") << "Error while listening " << status;
-	while(1)
+	Log::debug() << "TCP Thread listening";
+	sf::Socket::Status status = m_TCPlistener.listen(m_TCPlisteningPort);
+	if (status != sf::Socket::Status::Done)
+		Log::error("ConnectionManager::TCPlisteningThreadFunction") << "Error while listening " << status;
+	while (1)
 	{
-		listen();
+		Connection* connection = new ConnectionTCP();
+		sf::Socket::Status status = connection->acceptFrom(m_TCPlistener);
+		if (status != sf::Socket::Done)
+		{
+			Log::error("ConnectionManager::TCPlisteningThreadFunction") << "Error while listening " << status;
+			return;
+		}
+		m_connectionsAccess.lock();
+		m_connections.push_back(connection);
+		m_connectionsAccess.unlock();
 	}
 }
 
-void ConnectionManager::listen()
+void ConnectionManager::WebSocketlisteningThreadFunction()
 {
-	Connection* connection = new ConnectionTCP();
-	sf::Socket::Status status = connection->acceptFrom(m_listener);
-	if (status != sf::Socket::Done)
+	Log::debug() << "WebSocket Thread listening";
+	sf::Socket::Status status = m_WebSocketlistener.listen(m_WebSocketlisteningPort);
+	if (status != sf::Socket::Status::Done)
+		Log::error("ConnectionManager::WebSocketlisteningThreadFunction") << "Error while listening " << status;
+
+	while (1)
 	{
-		Log::error("MascaradeServer") << "Error while listening " << status;
-		return;
+		Connection* connection = new ConnectionWebSocket();
+		sf::Socket::Status status = connection->acceptFrom(m_WebSocketlistener);
+		if (status != sf::Socket::Done)
+		{
+			Log::error("ConnectionManager::WebSocketlisteningThreadFunction") << "Error while listening " << status;
+			return;
+		}
+		m_connectionsAccess.lock();
+		m_connections.push_back(connection);
+		m_connectionsAccess.unlock();
 	}
-	m_connectionsAccess.lock();
-	m_connections.push_back(connection);
-	m_connectionsAccess.unlock();
 }
 
 void ConnectionManager::checkReceive()

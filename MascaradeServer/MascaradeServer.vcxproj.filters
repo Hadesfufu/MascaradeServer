@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\pugi">
-      <UniqueIdentifier>{39bf293e-0c6a-4eeb-8f18-25f66223e7c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\pugi">
-      <UniqueIdentifier>{32528fcc-74b7-4466-b27d-59f84c7f5379}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MascaradeServer.h">
@@ -42,12 +36,6 @@
     <ClInclude Include="Parameters.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="external\pugixml\pugixml.hpp">
-      <Filter>Header Files\pugi</Filter>
-    </ClInclude>
-    <ClInclude Include="external\pugixml\pugiconfig.hpp">
-      <Filter>Header Files\pugi</Filter>
-    </ClInclude>
     <ClInclude Include="Connection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -60,7 +48,10 @@
     <ClInclude Include="ConnectionTCP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ConnectionHTTP.h">
+    <ClInclude Include="ConnectionWebSocket.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -89,9 +80,6 @@
     <ClCompile Include="Parameters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="external\pugixml\pugixml.cpp">
-      <Filter>Source Files\pugi</Filter>
-    </ClCompile>
     <ClCompile Include="Connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -104,7 +92,7 @@
     <ClCompile Include="ConnectionTCP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConnectionHTTP.cpp">
+    <ClCompile Include="ConnectionWebSocket.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

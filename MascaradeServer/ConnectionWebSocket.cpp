@@ -1,17 +1,17 @@
-#include "ConnectionHTTP.h"
+#include "ConnectionWebSocket.h"
+#include <sstream>
 
 
-
-ConnectionHTTP::ConnectionHTTP()
+ConnectionWebSocket::ConnectionWebSocket()
 {
 }
 
 
-ConnectionHTTP::~ConnectionHTTP()
+ConnectionWebSocket::~ConnectionWebSocket()
 {
 }
 
-Query& ConnectionHTTP::receive()
+Query& ConnectionWebSocket::receive()
 {
 	const size_t size = 1024;
 	size_t lastReceived;
@@ -36,8 +36,6 @@ Query& ConnectionHTTP::receive()
 		delete datas[i];
 	}
 
-
-
 	if (status == sf::Socket::Disconnected)
 	{
 		Log::info("ConnectionTCP::receive") << "Disconnecting : ";
@@ -49,6 +47,12 @@ Query& ConnectionHTTP::receive()
 	}
 	else if (status == sf::Socket::Done)
 	{
+
+		/*
+		 *	functionname:{argumenta : mescouilles; argumentb : mesboules;}
+		 *
+		 */
+
 		/*std::string s;
 		if (p >> s)
 			m_query.functionName = s;
@@ -74,7 +78,7 @@ Query& ConnectionHTTP::receive()
 	return m_query;
 }
 
-void ConnectionHTTP::send(sf::Packet& p)
+void ConnectionWebSocket::send(sf::Packet& p)
 {
 
 	sf::Socket::Status status;
@@ -88,3 +92,33 @@ void ConnectionHTTP::send(sf::Packet& p)
 	m_socket.disconnect();
 }
 
+sf::Socket::Status ConnectionWebSocket::acceptFrom(sf::TcpListener& tl)
+{
+	sf::Socket::Status status = tl.accept(m_socket);
+	if (status != sf::Socket::Done)
+		Log::error("Connection") << "Error while linking to client";
+	m_socket.setBlocking(false);
+	manageInit();
+	
+	return status;
+}
+
+void ConnectionWebSocket::manageInit()
+{
+	Query q = receive();
+	sf::Packet p;
+	std::string s = q.functionName;
+	size_t f = s.find("Sec-WebSocket-Key:");
+	s = s.substr(f + 19);
+	f = s.find("\n");
+	s = s.substr(0, f);
+	Log::debug("cuted") << s;
+
+	std::hash<std::string> hash_fn;
+	size_t str_hash = hash_fn(s);
+	std::stringstream ss;
+	ss << str_hash;
+	std::string r = "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection : Upgrade\r\nSec - WebSocket - Accept : " + ss.str() + "\r\nSec - WebSocket - Protocol : chat";
+	p << r;
+	send(p);
+}

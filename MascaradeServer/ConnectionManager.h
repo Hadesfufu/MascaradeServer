@@ -14,8 +14,10 @@ class ConnectionManager : public Singleton<ConnectionManager>
 	friend class Singleton<ConnectionManager>;
 public:
 
-	void setListeningPort(int i) { m_listeningPort = i; }
-	void launchListeningThread();
+	void setTCPListeningPort(int i) { m_TCPlisteningPort = i; }
+	void setWebSocketListeningPort(int i) { m_WebSocketlisteningPort = i; }
+
+	void launchListeningThreads();
 
 	void checkReceive();
 	Connection* getConnection(int i) { if (m_connections.size() > i) return m_connections.at(i); else return nullptr; }
@@ -25,14 +27,21 @@ private:
 	ConnectionManager();
 	~ConnectionManager();
 
-	void listeningThreadFunction();
-	void listen();
+	void TCPlisteningThreadFunction();
+
+	void WebSocketlisteningThreadFunction();
 
 	std::vector<Connection*>					m_connections;
 	std::function<int(Connection*)>				m_messageHandler;
-	sf::TcpListener								m_listener;
-	int											m_listeningPort;
-	sf::Thread									m_listeningThread;
+
+	sf::TcpListener								m_TCPlistener;
+	int											m_TCPlisteningPort;
+	sf::Thread									m_TCPlisteningThread;
+
+	sf::TcpListener								m_WebSocketlistener;
+	int											m_WebSocketlisteningPort;
+	sf::Thread									m_WebSocketlisteningThread;
+
 	sf::Mutex									m_connectionsAccess;
 };
 

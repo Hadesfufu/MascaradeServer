@@ -18,8 +18,9 @@ MascaradeServer::~MascaradeServer()
 void MascaradeServer::launchServer()
 {
 	ConnectionManager::getInstance()->setMessageHandler(std::bind(&MascaradeServer::handleMessage, this, std::placeholders::_1));
-	ConnectionManager::getInstance()->setListeningPort(*Parameters::getInstance()->get<int>("ftpListeningPort"));
-	ConnectionManager::getInstance()->launchListeningThread();
+	ConnectionManager::getInstance()->setTCPListeningPort(Parameters::getInstance()->getJson().at("ftpListeningPort"));
+	ConnectionManager::getInstance()->setWebSocketListeningPort(Parameters::getInstance()->getJson().at("webListeningPort"));
+	ConnectionManager::getInstance()->launchListeningThreads();
 	while (1) {
 		ConnectionManager::getInstance()->checkReceive();
 	}
@@ -27,18 +28,17 @@ void MascaradeServer::launchServer()
 
 void MascaradeServer::load()
 {
-	std::string filename = *Parameters::getInstance()->get<std::string>("cardFile");
-	pugi::xml_document doc;
-	if (!doc.load_file(filename.c_str())) {
-		Log::error("Behavior_Walking") << "The file hasn't been found";
-		return;
-	}
-	pugi::xml_node child = doc.first_child();
-	while(child)
-	{
-		if (child.name() == "Card")
-			m_cards.emplace_back(child);
-		child = child.next_sibling();
+	std::string filename = Parameters::getInstance()->getJson().at("cardFile");
+	std::ifstream file_stream;
+	file_stream.open(filename);
+	json myJson; 
+	file_stream >> myJson;
+	json cardArray = myJson.at("cardArray");
+	if (!cardArray.is_array())
+		Log::error("MascaradeServer::load") << "There is no \"cardArray\"";
+
+	for (auto& element : cardArray) {
+		m_cards.emplace_back(element);
 	}
 }
 

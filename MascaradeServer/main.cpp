@@ -4,12 +4,13 @@
 
 int main()
 {
-	
+	/*
 	sf::TcpListener listener;
 	listener.listen(53000);
 	sf::TcpSocket sock;
 	listener.accept(sock);
 	Log::debug() << "coucou" << sock.getRemoteAddress().toString() << sock.getRemotePort();
+	---------
 	const size_t size = 16;
 	size_t lastReceived;
 	sf::Socket::Status status;
@@ -32,6 +33,7 @@ int main()
 			s.append(datas[i], size);
 		delete datas[i];
 	}
+	---------
 	Log::debug() << s;
 
 	size_t f = s.find("Sec-WebSocket-Key:");
@@ -52,8 +54,8 @@ int main()
 	//sock.disconnect();
 	Log::debug() << r << status;
 	system("pause");
+	*/
 	
-	
-	//MascaradeServer::getInstance()->launchServer();
+	MascaradeServer::getInstance()->launchServer();
 	return 0;
 }

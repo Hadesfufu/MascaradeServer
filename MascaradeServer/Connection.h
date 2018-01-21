@@ -24,7 +24,7 @@ public:
 
 	void				connect(std::string address, int port);
 	void				disconnect();
-	sf::Socket::Status	acceptFrom(sf::TcpListener& tl);
+	virtual sf::Socket::Status	acceptFrom(sf::TcpListener& tl);
 	
 	virtual void		send(sf::Packet&) = 0;
 	virtual Query&		receive() = 0;

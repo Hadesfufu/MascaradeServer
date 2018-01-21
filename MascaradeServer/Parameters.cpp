@@ -6,60 +6,21 @@ Parameters::Parameters()
 }
 Parameters::~Parameters()
 {
-	m_doc.save_file("param.ini");
-	m_datas.clear();
+	m_fileStream << m_json;
+	m_fileStream.close();
 }
 
 void Parameters::load(void){
-	std::string path("param.ini");
-	if (!m_doc.load_file(path.c_str())){
-		Log::error("Parameters") << "Unable to open the parameters file";
-		return;
+	//std::string path("D:/Users/Hades/Source/Repos/MascaradeServer/MascaradeServer/param.ini");
+	try {
+		m_fileStream.open("param.ini", std::fstream::in | std::fstream::out);
+		if (!m_fileStream.is_open())
+			Log::error("Parameters::load") << "file not found";
+		m_fileStream >> m_json;
 	}
-	m_root = m_doc.first_child();
-}
-
-void Parameters::save(){
-	m_doc.save_file("param.ini");
-}
-
-void Parameters::set(std::string paramName, int value){
-	pugi::xml_node elem = m_root.child(paramName.c_str());
-	if (elem){
-		elem.first_attribute().set_value(value);
+	catch(std::fstream::failure e)
+	{
+		Log::debug("Parameters::load") << "Error while opening the file" << e.what();
 	}
-
-	if (get<int>(paramName)){
-		m_datas[paramName] = std::make_shared<int>(value);
-	}
-}
-void Parameters::set(std::string paramName, float value){
-	pugi::xml_node elem = m_root.child(paramName.c_str());
-	if (elem){
-		elem.first_attribute().set_value(value);
-	}
-
-	if (get<float>(paramName)){
-		m_datas[paramName] = std::make_shared<float>(value);
-	}
-}
-void Parameters::set(std::string paramName, unsigned int value){
-	pugi::xml_node elem = m_root.child(paramName.c_str());
-	if (elem){
-		elem.first_attribute().set_value(value);
-	}
-
-	if (get<unsigned int>(paramName)){
-		m_datas[paramName] = std::make_shared<unsigned int>(value);
-	}
-}
-void Parameters::set(std::string paramName, double value){
-	pugi::xml_node elem = m_root.child(paramName.c_str());
-	if (elem){
-		elem.first_attribute().set_value(value);
-	}
-
-	if (get<double>(paramName)){
-		m_datas[paramName] = std::make_shared<double>(value);
-	}
+	Log::debug();
 }
