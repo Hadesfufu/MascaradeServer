@@ -11,8 +11,15 @@ class HTTPSerialisation
 	virtual std::string serialize() = 0;
 };
 
+
 class ConnectionWebSocket : public Connection
 {
+	enum State
+	{
+		HandShake,
+		Reste
+	};
+
 public:
 	ConnectionWebSocket();
 	~ConnectionWebSocket();

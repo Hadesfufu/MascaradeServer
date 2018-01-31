@@ -1,11 +1,25 @@
 #include "ConnectionWebSocket.h"
 #include <sstream>
-#include <openssl\sha.h>
 #include "base64.h"
-#include "crypto.hpp"
+#include "sha1/sha1.h"
+//#include <openssl\sha.h>
+//#include "base64.h"
+//#include "crypto.hpp"
+
+#include <stdint.h>
+uint32_t htonl(uint32_t x)
+{
+#if BYTE_ORDER == LITTLE_ENDIAN
+	unsigned char *s = (unsigned char *)&x;
+	return (uint32_t)(s[0] << 24 | s[1] << 16 | s[2] << 8 | s[3]);
+#else
+	return x;
+#endif
+}
 
 ConnectionWebSocket::ConnectionWebSocket()
 {
+	
 }
 
 
@@ -38,7 +52,7 @@ Connection::Query& ConnectionWebSocket::receive()
 		delete datas[i];
 	}
 	
-	//Log::debug("ConnectionWebSocket::receive") << message;
+	Log::debug("ConnectionWebSocket::receive") << message;
 
 	if (status == sf::Socket::Disconnected)
 	{
@@ -111,31 +125,7 @@ void ConnectionWebSocket::manageInit()
 	Query q = receive();
 	if (q.functionName.empty())
 		return;
-	/*sf::Packet p;
-	std::string header = q.functionName;
-	size_t keyBegin = header.find("Sec-WebSocket-Key:");
-	size_t keyEnd = header.substr(keyBegin+19).find("\n");
-	std::string key = header.substr(keyBegin+19, keyEnd);
-	
-	
-	Log::debug("cuted") << key;
 
-	std::string s = "dGhlIHNhbXBsZSBub25jZQ==";
-	Log::debug() << s;
-	s += "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-	Log::debug() << s;
-	SHA1 checksum;
-	checksum.update(s);
-
-	std::string sha = checksum.final();
-	Log::debug("CHECK SHA1") << sha;
-	Log::debug("CHECK SHA1 in base64") << base64_encode(sha);
-	
-	/*std::hash<std::string> hash_fn;
-	size_t str_hash = hash_fn(key);
-	std::stringstream ss;
-	ss << str_hash;*/
-	//
 	std::string stream = q.functionName;
 	Log::debug() << stream;
 	static const std::string kWebSocketKeyIdentifier("Sec-WebSocket-Key: ");
@@ -157,10 +147,27 @@ void ConnectionWebSocket::manageInit()
 	key.append(kWebSocketMagic);
 	Log::debug() << "key: " << key;
 
-	std::string output = SimpleWeb::Crypto::SHA1(key);
-	std::string final = base64_encode(output);
-	std::string r = "HTTP/1.1 101 Switching Protocols\nUpgrade: websocket\nConnection : Upgrade\nSec-WebSocket-Key: " + final + "\nSec-WebSocket-Version: 13\n\n";
-	size_t to_send = r.length(), sent;
+	SHA1	sha;
+	unsigned int    message_digest[5];
+
+	sha.Reset();
+
+	sha << key.c_str();
+
+	sha.Result(message_digest);
+
+	for (int i = 0; i < 5; i++) {
+		message_digest[i] = htonl(message_digest[i]);
+	}
+
+	std::string final = base64_encode(
+		reinterpret_cast<const unsigned char*>
+		(message_digest), 20
+	);
+
+	Log::debug() << final;
+	std::string r = "HTTP/1.1 101 Switching Protocols\nUpgrade: websocket\nConnection: Upgrade\nSec-WebSocket-Key: " + final + "\nSec-WebSocket-Version: 13\n\n";
+	size_t sent;
 	m_socket.send(r.c_str(), r.length(), sent);
 	Log::debug("sender") << r.length() << sent;
 	//m_socket.disconnect();
