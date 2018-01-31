@@ -17,9 +17,8 @@ public:
 	void setTCPListeningPort(int i) { m_TCPlisteningPort = i; }
 	void setWebSocketListeningPort(int i) { m_WebSocketlisteningPort = i; }
 
-	void launchListeningThreads();
-
-	void checkReceive();
+	void update();
+	void init();
 	Connection* getConnection(int i) { if (m_connections.size() > i) return m_connections.at(i); else return nullptr; }
 
 	void setMessageHandler(std::function<int(Connection*)> func) { m_messageHandler = func; }
@@ -27,22 +26,19 @@ private:
 	ConnectionManager();
 	~ConnectionManager();
 
-	void TCPlisteningThreadFunction();
-
-	void WebSocketlisteningThreadFunction();
+	void addTCP();
+	void addWebSocket();
 
 	std::vector<Connection*>					m_connections;
 	std::function<int(Connection*)>				m_messageHandler;
 
 	sf::TcpListener								m_TCPlistener;
 	int											m_TCPlisteningPort;
-	sf::Thread									m_TCPlisteningThread;
 
 	sf::TcpListener								m_WebSocketlistener;
 	int											m_WebSocketlisteningPort;
-	sf::Thread									m_WebSocketlisteningThread;
 
-	sf::Mutex									m_connectionsAccess;
+	sf::SocketSelector							m_SocketSelector;
 };
 
 #endif

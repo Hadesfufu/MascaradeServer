@@ -9,21 +9,23 @@
 
 class Player;
 
-struct Query
-{
-	std::string functionName;
-	std::map<std::string,std::string> parameters;
-};
-
 class Connection 
 {
 
 public:
+
+
+	struct Query
+	{
+		std::string functionName;
+		std::map<std::string, std::string> parameters;
+	};
+
 	Connection();
 	~Connection();
 
-	void				connect(std::string address, int port);
-	void				disconnect();
+	void						connect(std::string address, int port);
+	void						disconnect();
 	virtual sf::Socket::Status	acceptFrom(sf::TcpListener& tl);
 	
 	virtual void		send(sf::Packet&) = 0;
@@ -31,6 +33,14 @@ public:
 	
 	Query&				getQuery() { return m_query; }
 	Player*				getPlayer() { return m_player; }
+
+	int					getRemotePort() { return m_socket.getRemotePort(); }
+	int					getRemoteAddress() { return m_socket.getRemoteAddress().getLocalAddress().toInteger(); }
+	int					getLocalPort() { return m_socket.getLocalPort(); }
+
+	void				addToSelector(sf::SocketSelector& selector) { selector.add(m_socket); }
+	void				removeFromSelector(sf::SocketSelector& selector) { selector.remove(m_socket); }
+	bool				isReady(sf::SocketSelector& selector) { return selector.isReady(m_socket); }
 
 protected:
 

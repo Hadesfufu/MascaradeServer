@@ -1,17 +1,17 @@
 
 #include "MascaradeServer.h"
-#include <sstream>
+#include <sstream>	
 
 int main()
 {
 	/*
 	sf::TcpListener listener;
-	listener.listen(53000);
+	listener.listen(53001);
 	sf::TcpSocket sock;
 	listener.accept(sock);
 	Log::debug() << "coucou" << sock.getRemoteAddress().toString() << sock.getRemotePort();
-	---------
-	const size_t size = 16;
+	//---------
+	const size_t size = 1024;
 	size_t lastReceived;
 	sf::Socket::Status status;
 	std::vector<char*> datas;
@@ -33,7 +33,7 @@ int main()
 			s.append(datas[i], size);
 		delete datas[i];
 	}
-	---------
+	//---------
 	Log::debug() << s;
 
 	size_t f = s.find("Sec-WebSocket-Key:");
@@ -50,12 +50,15 @@ int main()
 
 
 	std::string r = "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection : Upgrade\r\nSec - WebSocket - Accept : " +ss.str() + "\r\nSec - WebSocket - Protocol : chat";
+	Log::debug() << r;
 	status = sock.send(r.c_str(), r.size());
 	//sock.disconnect();
-	Log::debug() << r << status;
+	Log::debug() << status;
 	system("pause");
 	*/
 	
+	
+
 	MascaradeServer::getInstance()->launchServer();
 	return 0;
 }

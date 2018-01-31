@@ -26,7 +26,6 @@ sf::Socket::Status Connection::acceptFrom(sf::TcpListener& tl)
 	sf::Socket::Status status = tl.accept(m_socket);
 	if (status != sf::Socket::Done)
 		Log::error("Connection") << "Error while linking to client";
-	m_socket.setBlocking(false);
 	return status;
 }
 

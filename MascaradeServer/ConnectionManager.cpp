@@ -3,87 +3,89 @@
 #include "ConnectionWebSocket.h"
 
 
-ConnectionManager::ConnectionManager():
-m_TCPlisteningThread(&ConnectionManager::TCPlisteningThreadFunction, this),
-m_WebSocketlisteningThread(&ConnectionManager::WebSocketlisteningThreadFunction, this)
+ConnectionManager::ConnectionManager()
 {
-	m_TCPlistener.setBlocking(true);
-	m_WebSocketlistener.setBlocking(true);
+
+}
+
+
+void ConnectionManager::init(){
+	sf::Socket::Status status = m_TCPlistener.listen(m_TCPlisteningPort);
+	if (status != sf::Socket::Status::Done)
+		Log::error("ConnectionManager::ConnectionManager") << "Error while listening " << status;
+	else
+		Log::info("ConnectionManager::ConnectionManager") << "TCP listener live on :" << m_TCPlistener.getLocalPort();
+
+	status = m_WebSocketlistener.listen(m_WebSocketlisteningPort);
+	if (status != sf::Socket::Status::Done)
+		Log::error("ConnectionManager::WebSocketlisteningThreadFunction") << "Error while listening " << status;
+	else
+		Log::info("ConnectionManager::ConnectionManager") << "WebSocket listener live on :" << m_WebSocketlistener.getLocalPort();
+	
+	m_SocketSelector.add(m_TCPlistener);
+	m_SocketSelector.add(m_WebSocketlistener);
 }
 
 ConnectionManager::~ConnectionManager()
 {
-	m_TCPlisteningThread.terminate();
-	m_WebSocketlisteningThread.terminate();
-	Log::debug() << "Thread terminated";
 }
 
-void ConnectionManager::launchListeningThreads()
+void ConnectionManager::addTCP()
 {
-	m_TCPlisteningThread.launch();
-	m_WebSocketlisteningThread.launch();
-}
-
-void ConnectionManager::TCPlisteningThreadFunction()
-{
-	Log::debug() << "TCP Thread listening";
-	sf::Socket::Status status = m_TCPlistener.listen(m_TCPlisteningPort);
-	if (status != sf::Socket::Status::Done)
+	Log::info("ConnectionManager::addTCP") << "Adding TCP Connection";
+	Connection* connection = new ConnectionTCP();
+	sf::Socket::Status status = connection->acceptFrom(m_TCPlistener);
+	if (status != sf::Socket::Done)
+	{
 		Log::error("ConnectionManager::TCPlisteningThreadFunction") << "Error while listening " << status;
-	while (1)
-	{
-		Connection* connection = new ConnectionTCP();
-		sf::Socket::Status status = connection->acceptFrom(m_TCPlistener);
-		if (status != sf::Socket::Done)
-		{
-			Log::error("ConnectionManager::TCPlisteningThreadFunction") << "Error while listening " << status;
-			return;
-		}
-		m_connectionsAccess.lock();
-		m_connections.push_back(connection);
-		m_connectionsAccess.unlock();
+		return;
 	}
+	connection->addToSelector(m_SocketSelector);
+	m_connections.push_back(connection);
 }
 
-void ConnectionManager::WebSocketlisteningThreadFunction()
+void ConnectionManager::addWebSocket()
 {
-	Log::debug() << "WebSocket Thread listening";
-	sf::Socket::Status status = m_WebSocketlistener.listen(m_WebSocketlisteningPort);
-	if (status != sf::Socket::Status::Done)
+	Log::info("ConnectionManager::addWebSocket") << "Adding WebSocket Connection";
+	Connection* connection = new ConnectionWebSocket();
+	sf::Socket::Status status = connection->acceptFrom(m_WebSocketlistener);
+	if (status != sf::Socket::Done)
+	{
 		Log::error("ConnectionManager::WebSocketlisteningThreadFunction") << "Error while listening " << status;
-
-	while (1)
-	{
-		Connection* connection = new ConnectionWebSocket();
-		sf::Socket::Status status = connection->acceptFrom(m_WebSocketlistener);
-		if (status != sf::Socket::Done)
-		{
-			Log::error("ConnectionManager::WebSocketlisteningThreadFunction") << "Error while listening " << status;
-			return;
-		}
-		m_connectionsAccess.lock();
-		m_connections.push_back(connection);
-		m_connectionsAccess.unlock();
+		return;
 	}
+	connection->addToSelector(m_SocketSelector);
+	m_connections.push_back(connection);
 }
 
-void ConnectionManager::checkReceive()
+void ConnectionManager::update()
 {
-	//Log::debug() << m_connections.size();
-	m_connectionsAccess.lock();
-	for(auto it = m_connections.begin(); it != m_connections.end();)
-	{
-		if((*it)->receive().functionName == "disconnected")
-		{
-			m_messageHandler(*it);
-			//Log::debug() << "DELETING CONNECTION";
-			it = m_connections.erase(it);			
-			continue;
+	Log::info("ConnectionManager::update") << "Waiting";
+	if (m_SocketSelector.wait()) {
+		if (m_SocketSelector.isReady(m_TCPlistener)) {
+			addTCP();
+		}
+		else if (m_SocketSelector.isReady(m_WebSocketlistener)) {
+			addWebSocket();
 		}
 		else {
-			m_messageHandler(*it);
+			for (auto it = m_connections.begin(); it != m_connections.end();)
+			{
+				if ((*it)->isReady(m_SocketSelector)) {
+					if ((*it)->receive().functionName == "disconnected")
+					{
+						m_messageHandler(*it);
+						Log::debug() << "DELETING CONNECTION";
+						(*it)->removeFromSelector(m_SocketSelector);
+						it = m_connections.erase(it);
+						continue;
+					}
+					else {
+						m_messageHandler(*it);
+					}
+				}
+				++it;
+			}
 		}
-		++it;
 	}
-	m_connectionsAccess.unlock();
 }

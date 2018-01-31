@@ -11,7 +11,7 @@ ConnectionTCP::~ConnectionTCP()
 {
 }
 
-Query& ConnectionTCP::receive()
+Connection::Query& ConnectionTCP::receive()
 {
 	sf::Packet p;
 	sf::Socket::Status status = m_socket.receive(p);

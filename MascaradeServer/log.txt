@@ -1,6 +1,24 @@
 
-Debug (N/A): 
-Debug
- (DebugN/A (): N/A):  TCP Thread listening WebSocket Thread listening
-Error (ConnectionManager::WebSocketlisteningThreadFunction):  Error while listening  4
-Error (Connection):  Error while linking to client
+Info (ConnectionManager::ConnectionManager):  TCP listener live on : 53000
+Info (ConnectionManager::ConnectionManager):  WebSocket listener live on : 53001
+Info (ConnectionManager::update):  Waiting
+Info (ConnectionManager::addWebSocket):  Adding WebSocket Connection
+Debug (N/A):  GET / HTTP/1.1
+Host: localhost:53001
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:58.0) Gecko/20100101 Firefox/58.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: fr,fr-FR;q=0.8,en-US;q=0.5,en;q=0.3
+Accept-Encoding: gzip, deflate
+Sec-WebSocket-Version: 13
+Origin: null
+Sec-WebSocket-Extensions: permessage-deflate
+Sec-WebSocket-Key: vrgaDuOQi0v67S0BRk8yTA==
+Connection: keep-alive, Upgrade
+Pragma: no-cache
+Cache-Control: no-cache
+Upgrade: websocket
+
+
+Debug (N/A):  key:  vrgaDuOQi0v67S0BRk8yTA==258EAFA5-E914-47DA-95CA-C5AB0DC85B11
+Debug (sender):  148 148
+Info (ConnectionManager::update):  Waiting

@@ -20,9 +20,9 @@ void MascaradeServer::launchServer()
 	ConnectionManager::getInstance()->setMessageHandler(std::bind(&MascaradeServer::handleMessage, this, std::placeholders::_1));
 	ConnectionManager::getInstance()->setTCPListeningPort(Parameters::getInstance()->getJson().at("ftpListeningPort"));
 	ConnectionManager::getInstance()->setWebSocketListeningPort(Parameters::getInstance()->getJson().at("webListeningPort"));
-	ConnectionManager::getInstance()->launchListeningThreads();
+	ConnectionManager::getInstance()->init();
 	while (1) {
-		ConnectionManager::getInstance()->checkReceive();
+		ConnectionManager::getInstance()->update();
 	}
 }
 
@@ -45,7 +45,7 @@ void MascaradeServer::load()
 int MascaradeServer::handleMessage(Connection* connection)
 {
 	std::string s;
-	Query& query = connection->getQuery();
+	Connection::Query& query = connection->getQuery();
 	if (query.functionName=="disconnected") {
 		//Log::error("MascaradeServer::handleMessage") << "Disconnecting : ";
 		return 0;

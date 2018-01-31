@@ -22,5 +22,4 @@ void Parameters::load(void){
 	{
 		Log::debug("Parameters::load") << "Error while opening the file" << e.what();
 	}
-	Log::debug();
 }
